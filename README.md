@@ -25,7 +25,6 @@ El sistema se divide en servicios desacoplados:
 ## 🚀 Quick Start (Requisitos)
 Necesitas tener instalado:
 - Docker
-- Docker Compose
 
 ## 💻 Instalación y Uso
 1. Clonar el repositorio
