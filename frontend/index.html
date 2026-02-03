@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA FITS Microservices Dashboard</title>
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-blue-500 rounded-full animate-pulse"></div>
+                <h1 class="text-xl font-bold tracking-wider">FITS ANALYZER <span class="text-blue-400 text-sm font-normal">| Microservices Architecture</span></h1>
+            </div>
+            <div class="text-xs text-slate-400">Status: <span class="text-green-400 font-bold">ONLINE</span></div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 container mx-auto p-4 flex flex-col lg:flex-row gap-4 overflow-hidden">
+        
+        <!-- Sidebar: Lista de Archivos -->
+        <aside class="w-full lg:w-1/4 bg-slate-800 rounded-lg border border-slate-700 p-4 flex flex-col">
+            <h2 class="text-lg font-semibold mb-4 border-b border-slate-700 pb-2">Dataset</h2>
+            <div id="file-list" class="flex-1 overflow-y-auto space-y-2">
+                <!-- Los archivos se generan con JS -->
+            </div>
+        </aside>
+
+        <!-- Center: Visor de Imagen -->
+        <section class="w-full lg:w-2/3 bg-black rounded-lg border border-slate-700 relative flex items-center justify-center overflow-hidden group">
+            <div id="loading" class="absolute inset-0 flex items-center justify-center bg-black/80 z-10 hidden">
+                <div class="text-blue-500 font-mono animate-pulse">PROCESSING GRPC REQUEST...</div>
+            </div>
+            <img id="fits-image" src="" alt="Select a file" class="max-w-full max-h-full object-contain opacity-80 group-hover:opacity-100 transition duration-300">
+            <div id="placeholder" class="text-slate-500 font-mono text-sm">Waiting for selection...</div>
+        </section>
+
+        <!-- Right: Metadatos -->
+        <aside class="w-full lg:w-1/4 bg-slate-800 rounded-lg border border-slate-700 p-4 flex flex-col">
+            <h2 class="text-lg font-semibold mb-4 border-b border-slate-700 pb-2">Metadata</h2>
+            <div id="metadata-container" class="flex-1 overflow-y-auto text-xs font-mono space-y-1 text-slate-300">
+                <div class="text-slate-500 italic">No data loaded</div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-600 text-center p-2 text-xs border-t border-slate-800">
+        Powered by Django REST Framework, gRPC & Astropy
+    </footer>
+
+    <script>
+        // Lista de archivos de prueba (se deben agregar manualmente)
+        const files = [
+            'small.fits',
+            'medium.fits',
+            'large.fits',
+            'huge.fits',
+            'sintetico.fits',
+            'sintetico_oscuro.fits',
+            'test.fits',
+            'm42.fits',
+            'F555W-u2sa2104b.c0.fits',
+            'Jupiter.FITS',
+            'Uranus.FITS',
+            'm42_40min_ir.fits',
+            'etaCar_xray_low.fits'
+        ];
+
+        const fileListEl = document.getElementById('file-list');
+        const imgEl = document.getElementById('fits-image');
+        const metaEl = document.getElementById('metadata-container');
+        const loadingEl = document.getElementById('loading');
+        const placeholderEl = document.getElementById('placeholder');
+
+        // Renderizar lista
+        files.forEach(file => {
+            const btn = document.createElement('button');
+            btn.className = "w-full text-left p-2 rounded hover:bg-slate-700 transition text-sm border border-transparent hover:border-slate-600 flex justify-between";
+            btn.innerHTML = `<span>${file}</span> <span class="text-xs text-slate-500">LOAD</span>`;
+            btn.onclick = () => loadFile(file);
+            fileListEl.appendChild(btn);
+        });
+
+        async function loadFile(filename) {
+            // UI Updates
+            loadingEl.classList.remove('hidden');
+            placeholderEl.classList.add('hidden');
+            metaEl.innerHTML = '<div class="animate-pulse text-blue-400">Fetching metadata via gRPC...</div>';
+            
+            try {
+                // Fetch Metadata
+                const metaRes = await fetch(`/api/metadata/${filename}`);
+                const metaData = await metaRes.json();
+
+                // Render Metadata
+                if (metaData.status === 'success') {
+                    let html = `<div class="text-green-400 mb-2 border-b border-slate-600 pb-1">FILE: ${metaData.filename}</div>`;
+                    metaData.data.forEach(h => {
+                        html += `<div class="flex justify-between hover:bg-slate-700/50 px-1 rounded"><span class="text-slate-400">${h.key}</span> <span class="text-blue-300 truncate max-w-[120px]">${h.value}</span></div>`;
+                    });
+                    metaEl.innerHTML = html;
+                } else {
+                    metaEl.innerHTML = `<div class="text-red-400">Error: ${metaData.message}</div>`;
+                }
+
+                // Set Image Source (simple refresh triggers fetch)
+                imgEl.src = `/api/image/${filename}?t=${new Date().getTime()}`;
+
+            } catch (e) {
+                metaEl.innerHTML = `<div class="text-red-500">Connection Error: ${e.message}</div>`;
+            } finally {
+                loadingEl.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>

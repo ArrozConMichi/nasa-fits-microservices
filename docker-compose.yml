@@ -1,0 +1,29 @@
+services:
+  fits-metadata:
+    build: ./services/fits-metadata
+    volumes:
+      - ./data:/app/data
+
+  fits-processor:
+    build: ./services/fits-processor
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - fits-metadata
+
+  api-gateway:
+    build: ./services/api-gateway
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./proto:/app/proto
+    depends_on:
+      - fits-metadata
+      - fits-processor
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - api-gateway

@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package fits;
+
+// --- SERVICIO 1: METADATOS ---
+service MetadataService {
+  rpc GetFileMetadata (MetadataRequest) returns (MetadataResponse);
+}
+
+// --- SERVICIO IMÁGENES ---
+service ImageService {
+  rpc GetImageData (ImageRequest) returns (ImageResponse);
+}
+
+// --- MENSAJES PARA METADATOS ---
+message MetadataRequest {
+  string filename = 1;
+}
+
+message MetadataResponse {
+  bool success = 1;
+  string message = 2;
+  repeated HeaderEntry headers = 3;
+}
+
+message HeaderEntry {
+  string key = 1;
+  string value = 2;
+  string comment = 3;
+}
+
+// --- MENSAJES PARA IMÁGENES (NUEVOS) ---
+message ImageRequest {
+  string filename = 1;
+}
+
+message ImageResponse {
+  bool success = 1;
+  bytes image_data = 2;  // Aquí van los bytes del PNG
+  string format = 3;     // Ej: "png"
+}

@@ -1,0 +1,20 @@
+# Python / Django
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+*.log
+
+# DATA FOLDER:
+# 1. Ignorar todo el contenido de data/
+data/*
+
+# 2. Permitiendo archivos específicos
+!data/small.fits
+!data/medium.fits
+!data/large.fits
+!data/sintetico.fits
+!data/etaCar_xray_low.fits
+!data/m42.fits
