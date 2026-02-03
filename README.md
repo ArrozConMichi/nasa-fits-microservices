@@ -37,7 +37,7 @@ Necesitas tener instalado:
   
 4. Levantar el sistema usando `docker compose up --build`
   
-5. Para acceder, abre tu navegador en: http://localhost:8080
+5. Para acceder, abre tu navegador en: `http://localhost:8080`
 
 🛠️ Tech Stack
 - Backend: Python 3.12, Django 5, gRPC, Astropy.
