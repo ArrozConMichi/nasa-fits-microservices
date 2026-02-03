@@ -9,7 +9,9 @@ Sistema de procesamiento y visualización de datos astronómicos (formato FITS) 
 
 Este proyecto fue desarrollado como demostración técnica para experimentos y procesamiento distribuido de datos científicos.
 
-## 📸 Captura
+## 📸 Capturas
+<img width="1919" height="1033" alt="Captura de pantalla 2026-02-03 172103" src="https://github.com/user-attachments/assets/4cf02d0d-d322-4961-800d-c1a6eeaf5022" />
+<img width="1919" height="1037" alt="Captura de pantalla 2026-02-03 172235" src="https://github.com/user-attachments/assets/b8849590-3dd9-46a6-a4d5-a7babdc053e2" />
 
 ## 🏗️ Arquitectura
 El sistema se divide en servicios desacoplados:
